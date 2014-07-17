@@ -35,8 +35,8 @@ class ExpectationMaximizationWorker:
             new_parameters = self.Mstep(xarray, parameters, tau)
             if self.parameters_close(parameters, new_parameters, tol=tol):
                 return new_parameters
-            new_parameters = filter(lambda param: param['weight'] > weight_lowerthreshold, new_parameters)
-            if 0 in map(lambda param: param['stdev'], new_parameters):
+            new_parameters = filter(lambda component: component['weight'] > weight_lowerthreshold, new_parameters)
+            if 0 in map(lambda component: component['stdev'], new_parameters):
                 return new_parameters
             parameters = new_parameters
         return parameters
@@ -44,8 +44,8 @@ class ExpectationMaximizationWorker:
     def parameters_close(self, param1, param2, tol=1e-4):
         if len(param1) != len(param2):
             return False
-        for p1, p2 in zip(sorted(param1, key=lambda p: p['weight']), sorted(param2, key=lambda p: p['weight'])):
-            if not reduce(and_, map(lambda param: abs(p1[param]-p2[param])<tol, p1.keys())):
+        for comp1, comp2 in zip(sorted(param1, key=lambda comp: comp['weight']), sorted(param2, key=lambda comp: comp['weight'])):
+            if not reduce(and_, map(lambda param: abs(comp1[param]-comp2[param])<tol, comp1.keys())):
                 return False
         return True
 
