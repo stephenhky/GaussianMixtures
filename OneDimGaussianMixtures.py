@@ -5,7 +5,7 @@ from scipy.stats import norm
 from functools import partial
 
 sample_parameters = [{'weight': 0.4, 'mean': 0, 'stdev': 1},
-    {'weight': 0.6, 'mean': 2, 'stdev': 1.2}]
+    {'weight': 0.6, 'mean': 10, 'stdev': 1.2}]
 
 def density(x, parameters):
     zs = map(lambda p: (x-p['mean'])/p['stdev'], parameters)

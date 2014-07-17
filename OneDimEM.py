@@ -28,14 +28,15 @@ class ExpectationMaximizationWorker:
                              pi, mu, Sigma)
         return new_parameters
 
-    def workflow(self, xarray, init_parameters, max_iter=1000, tol=1e-4):
+    def workflow(self, xarray, init_parameters, max_iter=1000, tol=1e-4, weight_lowerthreshold=1e-8):
         parameters = init_parameters
         for iterid in range(max_iter):
-            print iterid
             tau = self.EStep(xarray, parameters)
             new_parameters = self.Mstep(xarray, parameters, tau)
-            print new_parameters
             if self.parameters_close(parameters, new_parameters, tol=tol):
+                return new_parameters
+            new_parameters = filter(lambda param: param['weight'] > weight_lowerthreshold, new_parameters)
+            if 0 in map(lambda param: param['stdev'], new_parameters):
                 return new_parameters
             parameters = new_parameters
         return parameters
@@ -50,7 +51,7 @@ class ExpectationMaximizationWorker:
 
 if __name__ == '__main__':
     print 'Sampling... '
-    xarray = gauss1d.MetropolisMarkovChain(partial(gauss1d.density, parameters=gauss1d.sample_parameters), 100)
+    xarray = gauss1d.MetropolisMarkovChain(partial(gauss1d.density, parameters=gauss1d.sample_parameters), 5000)
     init_parameters = [{'weight': 0.5, 'mean': 0, 'stdev': 2},
                        {'weight': 0.5, 'mean': 5, 'stdev': 2}]
     print 'Expectation maximization... '
